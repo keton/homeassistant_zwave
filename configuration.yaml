@@ -1,0 +1,88 @@
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+# default_config:
+config:
+frontend:
+  themes: !include_dir_merge_named ./themes
+history:
+mobile_app:
+ssdp:
+system_health:
+zeroconf:
+zone:
+recorder:
+  commit_interval: 2
+  purge_keep_days: 7
+homeassistant:
+  customize: !include customize.yaml
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+# http:
+#   base_url: example.duckdns.org:8123
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+
+sensor:
+  - platform: alpha_vantage
+    api_key: !secret aplha_vantage_api
+    foreign_exchange:
+      - name: USD_PLN
+        from: USD
+        to: PLN
+      - name: EUR_PLN
+        from: EUR
+        to: PLN
+  - platform: systemmonitor
+    resources:
+      - type: memory_use_percent
+      - type: load_1m
+      - type: last_boot
+
+binary_sensor:
+  - platform: template
+    sensors:
+      kitchen_contactron:
+        friendly_name: Kitchen Contactron
+        value_template: "{{ states.input_boolean.kitchen_contactron_sw.state == 'on' }}"
+        entity_id: input_boolean.kitchen_contactron_sw
+        device_class: window
+
+input_number:
+  room_set_point:
+    name: Room Thermostat Set Point
+    mode: box
+    min: 10
+    max: 30
+    step: 0.5
+    unit_of_measurement: C
+    icon: mdi:radiator
+  kitchen_set_point:
+    name: Kitchen Thermostat Set Point
+    mode: box
+    min: 10
+    max: 30
+    step: 0.5
+    unit_of_measurement: C
+    icon: mdi:radiator
+  window_open_set_point:
+    name: Window open temperature
+    mode: box
+    min: 10
+    max: 30
+    step: 0.5
+    unit_of_measurement: C
+    icon: mdi:radiator
+
+input_boolean:
+  kitchen_contactron_sw:
+    name: If on kitchen window is open
+    initial: off
+    icon: mdi:window-closed

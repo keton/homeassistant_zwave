@@ -1,0 +1,89 @@
+- id: '1585573360548'
+  alias: Store room thermostat setpoint
+  description: ''
+  trigger:
+  - event_data:
+      entity_id: climate.room_thermostat_heating_1
+    event_type: state_changed
+    platform: event
+  condition:
+  - condition: state
+    entity_id: binary_sensor.room_window_sensor
+    state: 'off'
+  action:
+  - data_template:
+      entity_id: input_number.room_set_point
+      value: '{{ state_attr(''climate.room_thermostat_heating_1'', ''temperature'') }}'
+    entity_id: input_number.room_set_point
+    service: input_number.set_value
+- id: '1585578135668'
+  alias: Store Kitchen Thermostat setpoint
+  description: ''
+  trigger:
+  - event_data:
+      entity_id: climate.kitchen_thermostat_heating_1_2
+    event_type: state_changed
+    platform: event
+  condition:
+  - condition: state
+    entity_id: binary_sensor.kitchen_contactron
+    state: 'off'
+  action:
+  - data_template:
+      entity_id: input_number.room_set_point
+      value: '{{ state_attr(''climate.kitchen_thermostat_heating_1_2'', ''temperature'') }}'
+    entity_id: input_number.kitchen_set_point
+    service: input_number.set_value
+- id: '1585584738304'
+  alias: Turn off room heating when window is open
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.room_window_sensor
+    platform: state
+    to: 'on'
+  condition: []
+  action:
+  - data_template:
+      temperature: '{{ states(''input_number.window_open_set_point'') }}'
+    entity_id: climate.room_thermostat_heating_1
+    service: climate.set_temperature
+- id: '1585585281297'
+  alias: Restore room heating on window close
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.room_window_sensor
+    platform: state
+    to: 'off'
+  condition: []
+  action:
+  - data_template:
+      temperature: '{{ states(''input_number.room_set_point'') }}'
+    entity_id: climate.room_thermostat_heating_1
+    service: climate.set_temperature
+
+- id: '1585585281298'
+  alias: Turn off kitchen heating when window is open
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.kitchen_contactron
+    platform: state
+    to: 'on'
+  condition: []
+  action:
+  - data_template:
+      temperature: '{{ states(''input_number.window_open_set_point'') }}'
+    entity_id: climate.kitchen_thermostat_heating_1_2
+    service: climate.set_temperature
+- id: '1585585281299'
+  alias: Turn off kitchen heating when window is open
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.kitchen_contactron
+    platform: state
+    to: 'off'
+  condition: []
+  action:
+  - data_template:
+      temperature: '{{ states(''input_number.kitchen_set_point'') }}'
+    entity_id: climate.kitchen_thermostat_heating_1_2
+    service: climate.set_temperature
